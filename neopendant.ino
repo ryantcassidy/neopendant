@@ -54,6 +54,8 @@ uint32_t GREEN = strip.Color(0,255,0);
 uint32_t BLUE = strip.Color(0,128,255);
 uint32_t PURPLE = strip.Color(127,0,255);
 uint32_t WHITE = strip.Color(255,255,255);
+#define RAINBOW_LEN 6
+uint32_t rainbow[RAINBOW_LEN] = {RED,ORANGE,YELLOW,GREEN,BLUE,PURPLE};
 
 void drawShape(uint32_t c, uint8_t shape[], uint8_t shape_len) {
     for (uint8_t i = 0; i < shape_len; i++) {
@@ -134,45 +136,63 @@ void loop() {
     spinOneCircle(100);
     clearPixels();
 
-    demoFillColumns(strip.Color(255,0,255));
+    rainbowRadiate(500);
 
-    demoFallingRows(strip.Color(0, 255, 0));
+    //demoFillColumns(strip.Color(255,0,255));
 
-    rainbowLoop();
+    //demoFallingRows(strip.Color(0, 255, 0));
+
+    //rainbowLoop();
 
     clearPixels();
 
-    colorWipe(strip.Color(255, 0, 0), 500); // Red
-    colorWipe(strip.Color(0, 255, 0), 500); // Green
-    colorWipe(strip.Color(0, 0, 255), 500); // Blue
+    colorWipe(strip.Color(255, 0, 0), 50); // Red
+    colorWipe(strip.Color(0, 255, 0), 50); // Green
+    colorWipe(strip.Color(0, 0, 255), 50); // Blue
 
-    rainbowCycle(20);
-    rainbowShape(smileyFace, SMILE_LEN, 20);
+    //rainbowShape(diagonalWipe, STRIP_LEN, 10);
+    //rainbowShape(smileyFace, SMILE_LEN, 10);
+}
+
+void drawCenter(uint32_t c) {
+    strip.setPixelColor(CENTER, c);
+}
+
+void drawRing1(uint32_t c) {
+    for (uint8_t i = 0; i < RING1; i++) {
+        strip.setPixelColor(ring1[i], c);
+    }
+}
+
+void drawRing2(uint32_t c) {
+    for (uint8_t i = 0; i < RING2; i++) {
+        strip.setPixelColor(ring2[i], c);
+    }
+}
+
+void drawAll(uint32_t c) {
+    for (uint16_t i = 0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, c);
+    }
 }
 
 void setCenter(uint32_t c) {
-    strip.setPixelColor(CENTER, c);
+    drawCenter(c);
     strip.show();
 }
 
 void setRing1(uint32_t c) {
-    for (uint8_t i = 0; i < RING1; i++) {
-        strip.setPixelColor(ring1[i], c);
-    }
+    drawRing1(c);
     strip.show();
 }
 
 void setRing2(uint32_t c) {
-    for (uint8_t i = 0; i < RING2; i++) {
-        strip.setPixelColor(ring2[i], c);
-    }
+    drawRing2(c);
     strip.show();
 }
 
 void setAll(uint32_t c) {
-    for (uint16_t i = 0; i < strip.numPixels(); i++) {
-        strip.setPixelColor(i, c);
-    }
+    drawAll(c);
     strip.show();
 }
 
@@ -209,14 +229,30 @@ void fillRings() {
 
 void bubblePop(uint32_t c) {
     setCenter(c);
-    delay(500);
+    delay(200);
     clearPixels();
     setRing1(c);
-    delay(500);
+    delay(200);
     clearPixels();
     setRing2(c);
-    delay(500);
+    delay(200);
     clearPixels();
+}
+
+void rainbowRadiate(int waitTime){
+    for(uint8_t times = 0; times < 5; times++){
+        for(uint8_t i = 0; i<RAINBOW_LEN;i++){    
+            drawCenter(rainbow[i]);
+            strip.show();
+            delay(waitTime);
+            drawRing1(rainbow[i]);
+            strip.show();
+            delay(waitTime);
+            drawRing2(rainbow[i]);
+            strip.show();
+            delay(waitTime * 3);
+        }
+    }
 }
 
 void demoFillColumns(uint32_t c) {
@@ -300,29 +336,18 @@ void colorWipe(uint32_t c, uint8_t wait) {
     }
 }
 
-// Slightly different, this makes the rainbow equally distributed throughout
-void rainbowCycle(uint8_t wait) {
-    uint16_t i, j;
-
-    for (j = 0; j < 256 * 5; j++) { // 5 cycles of all colors on wheel
-        for (i = 0; i < strip.numPixels(); i++) {
-            strip.setPixelColor(diagonalWipe[i], Wheel(((i * 256 / strip.numPixels()) + j) & 255));
-        }
-        strip.show();
-        delay(wait);
-    }
-}
-
 void rainbowShape(uint8_t shape[], uint8_t shape_len, uint8_t wait) {
     uint16_t i, j;
 
     for (j = 0; j < 256 * 5; j++) { // 5 cycles of all colors on wheel
         for (i = 0; i < shape_len; i++) {
-            strip.setPixelColor(shape[i], Wheel(((i * 256 / shape_len) + j) & 255));
+            strip.setPixelColor(cs(shape[i]), Wheel(((i * 256 / shape_len) + j) & 255));
         }
         strip.show();
         delay(wait);
     }
+
+    clearPixels();
 }
 
 // one 'tick' of the pendant, aka 1/6 roation
