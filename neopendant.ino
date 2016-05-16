@@ -8,18 +8,15 @@
 #define STRIP_LEN 19
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_LEN, PIN, NEO_GRB);
 
-
-#define ROWS 7
-#define COLS 5
-
 // Actual strip indices for pixels on pendant
-#define CENTER 12
-#define RING1_LEN 6
+uint8_t center = 12
+#define RING1_LEN 6;
 uint8_t ring1[RING1_LEN] = {13, 14, 15, 16, 17, 18};
 #define RING2_LEN 12
 uint8_t ring2[RING2_LEN] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0};
 
 // COLS
+#define COLS 5
 uint8_t leftCol[3] = {8, 9, 10};
 uint8_t leftMidCol[4] = {11, 16, 17, 7};
 uint8_t centerCol[5] = {0, 12, 18, 6, 15};
@@ -29,6 +26,7 @@ uint8_t colLengths[COLS] = {3, 4, 5, 4, 3};
 uint8_t* cols[COLS] = {leftCol, leftMidCol, centerCol, rightMidCol, rightCol};
 
 // ROWS
+#define ROWS 7
 uint8_t firstRow[3] = {11, 0, 1};
 uint8_t secondRow[3] = {10, 2, 12};
 uint8_t thirdRow[2] = {13, 17};
@@ -60,28 +58,18 @@ uint32_t WHITE = strip.Color(255, 255, 255);
 #define RAINBOW_LEN 6
 uint32_t rainbow[RAINBOW_LEN] = {RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE};
 
-void drawShape(uint32_t c, uint8_t shape[], uint8_t shape_len) {
-    for (uint8_t i = 0; i < shape_len; i++) {
-        strip.setPixelColor(cs(shape[i]), c);
-    }
-    strip.show();
-}
-
-void clearShape(uint8_t shape[], uint8_t shape_len) {
-    drawShape(strip.Color(0, 0, 0), shape, shape_len);
-}
-
-void demoShape(uint32_t c, uint8_t shape[], uint8_t shape_len, int waitTime) {
-    clearPixels();
-    drawShape(c, shape, shape_len);
-    delay(waitTime);
-    clearPixels();
-}
-
-// clock style coords
-// outer ring is 0-11,
-// inner ring is 12-17,
-// center is 18
+/*   Clock-style         Actual hardware addresses
+        0                      1
+    11     1                0    2
+ 10    12     2         11    13     3
+    17    13               18    14
+9      18      3       10     12      4
+    16    14               17    15
+ 8     15     4         9     16     5
+     7     5                8     6
+        6                      7
+                                      */
+// hardware -> clock-style
 uint8_t cs(uint8_t coord) {
     if (coord == 18) {
         return 12;
@@ -94,7 +82,7 @@ uint8_t cs(uint8_t coord) {
     }
 }
 
-// reverse translation
+// reverse translation -- clock-style -> hardware
 uint8_t sc(uint8_t pixel) {
     if (pixel == 0) {
         return 11;
@@ -109,7 +97,7 @@ uint8_t sc(uint8_t pixel) {
 
 void setup() {
     strip.begin();
-    strip.setBrightness(10);
+    strip.setBrightness(30);
     strip.show(); // Initialize all pixels to 'off'
 }
 
@@ -152,7 +140,7 @@ void loop() {
 }
 
 void drawCenter(uint32_t c) {
-    strip.setPixelColor(CENTER, c);
+    strip.setPixelColor(center, c);
 }
 
 void drawRing1(uint32_t c) {
@@ -200,6 +188,24 @@ void clearPixel(uint8_t i) {
 
 void clearPixels() {
     setAll(strip.Color(0, 0, 0));
+}
+
+void drawShape(uint32_t c, uint8_t shape[], uint8_t shape_len) {
+    for (uint8_t i = 0; i < shape_len; i++) {
+        strip.setPixelColor(cs(shape[i]), c);
+    }
+    strip.show();
+}
+
+void clearShape(uint8_t shape[], uint8_t shape_len) {
+    drawShape(strip.Color(0, 0, 0), shape, shape_len);
+}
+
+void demoShape(uint32_t c, uint8_t shape[], uint8_t shape_len, int waitTime) {
+    clearPixels();
+    drawShape(c, shape, shape_len);
+    delay(waitTime);
+    clearPixels();
 }
 
 void blinkInOrder(int timedelay) {
