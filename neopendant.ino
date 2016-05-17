@@ -1,4 +1,5 @@
 #include <Adafruit_NeoPixel.h>
+#include <letters.h>
 
 #define PIN 0
 
@@ -58,7 +59,8 @@ uint32_t WHITE = strip.Color(255, 255, 255);
 #define RAINBOW_LEN 6
 uint32_t rainbow[RAINBOW_LEN] = {RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE};
 
-/*   Clock-style         Actual hardware addresses
+/*
+   Clock-style         Actual hardware addresses
         0                      1
     11     1                0    2
  10    12     2         11    13     3
@@ -68,7 +70,8 @@ uint32_t rainbow[RAINBOW_LEN] = {RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE};
  8     15     4         9     16     5
      7     5                8     6
         6                      7
-                                      */
+*/
+
 // hardware -> clock-style
 uint8_t cs(uint8_t coord) {
     if (coord == 18) {
