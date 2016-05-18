@@ -3,7 +3,7 @@
 
 #define PIN 0
 
-// ideas: Raining! Matrix!
+// ideas: Raining! Matrix! with trail!
 // write a demo for brightness testing?
 
 #define STRIP_LEN 19
@@ -110,22 +110,19 @@ void setup() {
 void loop() {
 
     paintAll(strip.Color(255, 255, 255));
-    delay(300);
-
-    demoBlinkInOrder(200);
-
-    demoFillRings(strip.Color(255,0,255));
+    delay(100);
+    clearPixels();
 
     rainbowBubblePop(100);
     demoRainbowRadiate(100);
 
-    demoShape(strip.Color(255, 255, 0), spokes, SPOKES_LEN, 1000);
+    demoShape(strip.Color(0, 200, 100), spokes, SPOKES_LEN, 1000);
 
-    paintShape(strip.Color(255, 255, 0), peaceSign, PEACE_LEN);
+    paintShape(strip.Color(0, 200, 100), peaceSign, PEACE_LEN);
     spinOneCircle(500);
     clearPixels();
 
-    paintShape(strip.Color(255, 255, 0), line, LINE_LEN);
+    paintShape(strip.Color(0, 200, 100), line, LINE_LEN);
     spinOneCircle(500);
     clearPixels();
 
@@ -134,6 +131,8 @@ void loop() {
 
     rainbowLoop();
     clearPixels();
+
+    rainbowShape(smileyFace, SMILE_LEN, 20);
 
     demoColorWipe(50);
 
@@ -235,15 +234,19 @@ void bubblePop(uint32_t c, int delayTime) {
     clearPixels();
 }
 
+void fillRings(uint32_t c, int wait){
+    paintCenter(c);
+    delay(wait);
+    paintRing1(c);
+    delay(wait);
+    paintRing2(c);
+    delay(wait);
+}
+
 void demoRainbowRadiate(int waitTime) {
     for (uint8_t times = 0; times < 2; times++) {
         for (uint8_t i = 0; i < RAINBOW_LEN; i++) {
-            paintCenter(rainbow[i]);
-            delay(waitTime);
-            paintRing1(rainbow[i]);
-            delay(waitTime);
-            paintRing2(rainbow[i]);
-            delay(waitTime);
+            fillRings(rainbow[i], 150);
         }
     }
     clearPixels();
@@ -284,8 +287,6 @@ void demoDiagonalColorWipe(uint8_t wait) {
   }
 }
 
-// Fun with shapes !!!
-// Other simple Demos
 void demoShapeWipe(uint8_t shape[], uint8_t shapeLen, uint32_t c, uint8_t wait) {
     for (uint16_t i = 0; i < shapeLen; i++) {
         paintPixel(cs(shape[i]), c);
@@ -305,17 +306,6 @@ void demoShape(uint32_t c, uint8_t shape[], uint8_t shape_len, int waitTime) {
     clearPixels();
 }
 
-void demoFillRings(uint32_t c) {
-    clearPixels();
-    paintCenter(c);
-    delay(1000);
-    paintRing1(c);
-    delay(1000);
-    paintRing2(c);
-    delay(1000);
-    clearPixels();
-}
-
 void demoBlinkInOrder(int timedelay) {
     clearPixels();
     for (uint8_t i = 0; i < strip.numPixels(); i++) {
@@ -324,20 +314,6 @@ void demoBlinkInOrder(int timedelay) {
         delay(timedelay);
         clearPixel(cs(i));
     }
-}
-
-void rainbowShape(uint8_t shape[], uint8_t shape_len, uint8_t wait) {
-    uint16_t i, j;
-
-    for (j = 0; j < 256 * 3; j++) { // 3 cycles of all colors on wheel
-        for (i = 0; i < shape_len; i++) {
-            strip.setPixelColor(cs(shape[i]), Wheel(((i * 256 / shape_len) + j) & 255));
-        }
-        strip.show();
-        delay(wait);
-    }
-
-    clearPixels();
 }
 
 // Rows & Columns
@@ -360,20 +336,24 @@ void demoColumns(uint32_t c, uint16_t wait) {
         paintShape(c, cols[x], colLengths[x]);
         delay(wait);
       }
-      for(x = 0; x < COLS; x++){
+      for(x = 0; x <= COLS; x++){
         clearShape(cols[COLS - x], colLengths[COLS - x]);
         delay(wait);
       }
     }
-    for(uint8_t i = 0; i < 3; i++){
-      for(x = 0; x < COLS; x++){
-        paintShape(c, cols[x], colLengths[x]);
-        delay(wait);
-        clearShape(cols[x], colLengths[x]);
-      }
+    for(uint8_t i = 0; i < RAINBOW_LEN; i++){
+      columnStripe(rainbow[i], wait);
     }
   
     clearPixels();
+}
+
+void columnStripe(uint32_t c, uint16_t wait){
+  for(uint8_t x = 0; x < COLS; x++){
+        paintShape(c, cols[x], colLengths[x]);
+        delay(wait);
+        clearShape(cols[x], colLengths[x]);
+  }
 }
 
 void demoFallingRows(uint32_t c) {
@@ -427,7 +407,7 @@ void rotatePendant() {
 
 // take current design and spin one full time
 void spinOneCircle(int timeDelay) {
-    for (int a = 0; a < 6; a++) {
+    for (int a = 0; a < 7; a++) {
         delay(timeDelay);
         rotatePendant();
 
@@ -435,6 +415,21 @@ void spinOneCircle(int timeDelay) {
 }
 
 // Rainbow Math
+
+void rainbowShape(uint8_t shape[], uint8_t shape_len, uint8_t wait) {
+    uint16_t i, j;
+
+    for (j = 0; j < 256 * 3; j++) { // 3 cycles of all colors on wheel
+        for (i = 0; i < shape_len; i++) {
+            strip.setPixelColor(cs(shape[i]), Wheel(((i * 256 / shape_len) + j) & 255));
+        }
+        strip.show();
+        delay(wait);
+    }
+
+    clearPixels();
+}
+
 // Input a value 0 to 255 to get a color value.
 // The colours are a transition r - g - b - back to r.
 uint32_t Wheel(byte WheelPos) {
