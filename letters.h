@@ -5,7 +5,7 @@ uint8_t letterA[] = {8,9,10,11,0,1,2,3,4,17,18,13};
 #define B_LEN 11
 uint8_t letterB[] = {11,17,16,7,0,1,13,18,14,5,6};
 #define C_LEN 10
-uint8_t letterC[] = {1,0,11,10,9,8,7,6,5,4};
+uint8_t letterC[] = {1,0,11,10,9,8,7,6,5};
 #define D_LEN 11
 uint8_t letterD[] = {11,17,16,7,6,5,4,3,2,1,0};
 #define E_LEN 9
@@ -15,7 +15,7 @@ uint8_t letterF[] = {11,17,16,7,0,1,18};
 #define G_LEN 12
 uint8_t letterG[] = {0,11,10,9,8,7,6,5,4,3,13,18};
 #define H_LEN 9
-uint8_t letterH[] = {11,17,6,7,1,13,14,5,18};
+uint8_t letterH[] = {11,17,16,7,1,13,14,5,18};
 #define I_LEN 5
 uint8_t letterI[] = {0,12,18,15,6};
 #define J_LEN 7

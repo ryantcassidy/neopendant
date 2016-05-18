@@ -1,5 +1,5 @@
 #include <Adafruit_NeoPixel.h>
-#include <letters.h>
+#include "letters.h"
 
 #define PIN 0
 
@@ -10,8 +10,8 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_LEN, PIN, NEO_GRB);
 
 // Actual strip indices for pixels on pendant
-uint8_t center = 12
-#define RING1_LEN 6;
+uint8_t center = 12;
+#define RING1_LEN 6
 uint8_t ring1[RING1_LEN] = {13, 14, 15, 16, 17, 18};
 #define RING2_LEN 12
 uint8_t ring2[RING2_LEN] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0};
@@ -49,15 +49,18 @@ uint8_t spokes[SPOKES_LEN] = {0, 2, 4, 6, 8, 10, 12, 13, 14, 15, 16, 17, 18};
 #define LINE_LEN 5
 uint8_t line[LINE_LEN] = {0, 12, 18, 15, 6};
 
+uint32_t WHITE = strip.Color(255, 255, 255);
+
 uint32_t RED = strip.Color(255, 0, 0);
 uint32_t ORANGE = strip.Color(255, 128, 0);
 uint32_t YELLOW = strip.Color(255, 255, 0);
 uint32_t GREEN = strip.Color(0, 255, 0);
-uint32_t BLUE = strip.Color(0, 128, 255);
-uint32_t PURPLE = strip.Color(127, 0, 255);
-uint32_t WHITE = strip.Color(255, 255, 255);
-#define RAINBOW_LEN 6
-uint32_t rainbow[RAINBOW_LEN] = {RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE};
+uint32_t BLUE = strip.Color(0, 0, 255);
+uint32_t INDIGO = strip.Color(75,0,130);
+uint32_t VIOLET = strip.Color(139,0,255);
+
+#define RAINBOW_LEN 7
+uint32_t rainbow[RAINBOW_LEN] = {RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET};
 
 /*
    Clock-style         Actual hardware addresses
@@ -106,112 +109,214 @@ void setup() {
 
 void loop() {
 
-    setAll(strip.Color(255, 255, 255));
+    paintAll(strip.Color(255, 255, 255));
+    delay(300);
 
-    //blinkInOrder(500);
+    demoBlinkInOrder(200);
 
-    fillRings();
+    demoFillRings(strip.Color(255,0,255));
 
-    rainbowBubblePop(200);
+    rainbowBubblePop(100);
+    demoRainbowRadiate(100);
 
-    demoShape(strip.Color(255, 255, 0), peaceSign, PEACE_LEN, 1000);
-    demoShape(strip.Color(255, 255, 0), smileyFace, SMILE_LEN, 1000);
     demoShape(strip.Color(255, 255, 0), spokes, SPOKES_LEN, 1000);
 
-    drawShape(strip.Color(255, 255, 0), line, LINE_LEN);
-    //spinOneCircle(100);
-    //spinOneCircle(100);
-    //spinOneCircle(100);
+    paintShape(strip.Color(255, 255, 0), peaceSign, PEACE_LEN);
+    spinOneCircle(500);
     clearPixels();
 
-    rainbowRadiate(500);
+    paintShape(strip.Color(255, 255, 0), line, LINE_LEN);
+    spinOneCircle(500);
+    clearPixels();
 
-    //demoFillColumns(strip.Color(255,0,255));
-
+    demoColumns(strip.Color(255,0,255), 150);
     demoFallingRows(strip.Color(0, 255, 0));
 
-    //rainbowLoop();
-
+    rainbowLoop();
     clearPixels();
 
-    colorWipe(strip.Color(255, 0, 0), 50); // Red
-    colorWipe(strip.Color(0, 255, 0), 50); // Green
-    colorWipe(strip.Color(0, 0, 255), 50); // Blue
+    demoColorWipe(50);
 
-    //rainbowShape(diagonalWipe, STRIP_LEN, 10);
-    //rainbowShape(smileyFace, SMILE_LEN, 10);
+    demoDiagonalColorWipe(50);
+
+    rainbowShape(diagonalWipe, STRIP_LEN, 10);
+
+    demoAlphabet(strip.Color(0, 200, 100), 50);
 }
 
-void drawCenter(uint32_t c) {
+// UTIL-----------------------------------------
+// set functions -- just change the pixel, don't call show()
+void setPixel(uint8_t i, uint32_t c) {
+    strip.setPixelColor(i, c);
+}
+
+void setCenter(uint32_t c) {
     strip.setPixelColor(center, c);
 }
 
-void drawRing1(uint32_t c) {
+void setRing1(uint32_t c) {
     for (uint8_t i = 0; i < RING1_LEN; i++) {
         strip.setPixelColor(ring1[i], c);
     }
 }
 
-void drawRing2(uint32_t c) {
+void setRing2(uint32_t c) {
     for (uint8_t i = 0; i < RING2_LEN; i++) {
         strip.setPixelColor(ring2[i], c);
     }
 }
 
-void drawAll(uint32_t c) {
+void setAll(uint32_t c) {
     for (uint16_t i = 0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, c);
     }
 }
 
-void setCenter(uint32_t c) {
-    drawCenter(c);
+// paint functions -- call show() after changing the pixels
+void paintPixel(uint8_t i, uint32_t c){
+    setPixel(i, c);
     strip.show();
 }
 
-void setRing1(uint32_t c) {
-    drawRing1(c);
+void paintCenter(uint32_t c) {
+    setCenter(c);
     strip.show();
 }
 
-void setRing2(uint32_t c) {
-    drawRing2(c);
+void paintRing1(uint32_t c) {
+    setRing1(c);
     strip.show();
 }
 
-void setAll(uint32_t c) {
-    drawAll(c);
+void paintRing2(uint32_t c) {
+    setRing2(c);
     strip.show();
 }
 
-void clearPixel(uint8_t i) {
-    strip.setPixelColor(i, strip.Color(0, 0, 0));
+void paintAll(uint32_t c) {
+    setAll(c);
     strip.show();
 }
 
-void clearPixels() {
-    setAll(strip.Color(0, 0, 0));
-}
-
-void drawShape(uint32_t c, uint8_t shape[], uint8_t shape_len) {
+void paintShape(uint32_t c, uint8_t shape[], uint8_t shape_len) {
     for (uint8_t i = 0; i < shape_len; i++) {
         strip.setPixelColor(cs(shape[i]), c);
     }
     strip.show();
 }
 
+
+// clear functions -- blank out a pixel and call show()
+void clearPixel(uint8_t i) {
+    strip.setPixelColor(i, strip.Color(0, 0, 0));
+    strip.show();
+}
+
+void clearPixels() {
+    paintAll(strip.Color(0, 0, 0));
+}
+
 void clearShape(uint8_t shape[], uint8_t shape_len) {
-    drawShape(strip.Color(0, 0, 0), shape, shape_len);
+    paintShape(strip.Color(0, 0, 0), shape, shape_len);
+}
+
+// bubble pop and rainbow radiate!
+void bubblePop(uint32_t c, int delayTime) {
+    paintCenter(c);
+    delay(delayTime);
+    clearPixels();
+
+    paintRing1(c);
+    delay(delayTime);
+    clearPixels();
+
+    paintRing2(c);
+    delay(delayTime);
+    clearPixels();
+}
+
+void demoRainbowRadiate(int waitTime) {
+    for (uint8_t times = 0; times < 2; times++) {
+        for (uint8_t i = 0; i < RAINBOW_LEN; i++) {
+            paintCenter(rainbow[i]);
+            delay(waitTime);
+            paintRing1(rainbow[i]);
+            delay(waitTime);
+            paintRing2(rainbow[i]);
+            delay(waitTime);
+        }
+    }
+    clearPixels();
+}
+
+void rainbowBubblePop(int delayTime) {
+    for (uint8_t i = 0; i < RAINBOW_LEN; i++) {
+        bubblePop(rainbow[i], delayTime);
+    }
+}
+
+
+// Fill the dots one after the other with a color
+void colorWipe(uint32_t c, uint8_t wait) {
+    for (uint16_t i = 0; i < strip.numPixels(); i++) {
+        paintPixel(cs(i), c);
+        delay(wait);
+    }
+}
+
+void demoColorWipe(uint8_t wait) {
+  for(uint8_t i = 0; i < RAINBOW_LEN; i++){
+    colorWipe(rainbow[i], wait);
+  }
+}
+
+// Fill the dots one after the other with a color
+void diagonalColorWipe(uint32_t c, uint8_t wait) {
+    for (uint16_t i = 0; i < strip.numPixels(); i++) {
+        paintPixel(cs(diagonalWipe[i]), c);
+        delay(wait);
+    }
+}
+
+void demoDiagonalColorWipe(uint8_t wait) {
+  for(uint8_t i = 0; i < RAINBOW_LEN; i++){
+    diagonalColorWipe(rainbow[i], wait);
+  }
+}
+
+// Fun with shapes !!!
+// Other simple Demos
+void demoShapeWipe(uint8_t shape[], uint8_t shapeLen, uint32_t c, uint8_t wait) {
+    for (uint16_t i = 0; i < shapeLen; i++) {
+        paintPixel(cs(shape[i]), c);
+        delay(wait);
+    }
+    clearPixels();
+    delay(wait);
+    paintShape(c, shape, shapeLen);
+    delay(wait * 5);
+    clearShape(shape, shapeLen);
 }
 
 void demoShape(uint32_t c, uint8_t shape[], uint8_t shape_len, int waitTime) {
     clearPixels();
-    drawShape(c, shape, shape_len);
+    paintShape(c, shape, shape_len);
     delay(waitTime);
     clearPixels();
 }
 
-void blinkInOrder(int timedelay) {
+void demoFillRings(uint32_t c) {
+    clearPixels();
+    paintCenter(c);
+    delay(1000);
+    paintRing1(c);
+    delay(1000);
+    paintRing2(c);
+    delay(1000);
+    clearPixels();
+}
+
+void demoBlinkInOrder(int timedelay) {
     clearPixels();
     for (uint8_t i = 0; i < strip.numPixels(); i++) {
         strip.setPixelColor(cs(i), 255, 255, 255);
@@ -221,147 +326,10 @@ void blinkInOrder(int timedelay) {
     }
 }
 
-void fillRings() {
-    uint32_t c = strip.Color(255, 255, 255);
-
-    setCenter(c);
-    delay(1000);
-    setRing1(c);
-    delay(1000);
-    setRing2(c);
-    delay(1000);
-    clearPixels();
-}
-
-void bubblePop(uint32_t c, int delayTime) {
-    setCenter(c);
-    delay(delayTime);
-    clearPixels();
-
-    setRing1(c);
-    delay(delayTime);
-    clearPixels();
-
-    setRing2(c);
-    delay(delayTime);
-    clearPixels();
-}
-
-void rainbowRadiate(int waitTime) {
-    for (uint8_t times = 0; times < 5; times++) {
-        for (uint8_t i = 0; i < RAINBOW_LEN; i++) {
-            drawCenter(rainbow[i]);
-            strip.show();
-            delay(waitTime);
-            drawRing1(rainbow[i]);
-            strip.show();
-            delay(waitTime);
-            drawRing2(rainbow[i]);
-            strip.show();
-            delay(waitTime * 3);
-        }
-    }
-}
-
-void rainbowBubblePop(int delayTime) {
-    for (uint8_t i = 0; i < RAINBOW_LEN; i++) {
-        bubblePop(rainbow[i], delayTime);
-    }
-}
-
-void demoFillColumns(uint32_t c) {
-    // todo: shorthand this like rows?
-    drawShape(c, leftCol, 3);
-    delay(500);
-    drawShape(c, leftMidCol, 4);
-    delay(500);
-    drawShape(c, centerCol, 5);
-    delay(500);
-    drawShape(c, rightMidCol, 4);
-    delay(500);
-    drawShape(c, rightCol, 3);
-    delay(500);
-    clearPixels();
-}
-
-void demoFallingRows(uint32_t c) {
-    for (uint8_t rowsDropped = 0; rowsDropped < 7; rowsDropped++) {
-        for (uint8_t rowsBlinked = 0; rowsBlinked < 7; rowsBlinked++) {
-            drawShape(c, rows[rowsBlinked], rowLengths[rowsBlinked]);
-            delay(300);
-            if (rowsDropped >= 6 - rowsBlinked) {
-                break;
-            }
-            clearShape(rows[rowsBlinked], rowLengths[rowsBlinked]);
-        }
-    }
-    delay(300);
-    clearPixels();
-}
-
-void increasePixelBrightness(uint8_t i, uint8_t bdelta) {
-    uint32_t c = strip.getPixelColor(i);
-    uint8_t r = (uint8_t)(c >> 16);
-    uint8_t g = (uint8_t)(c >> 8);
-    uint8_t b = (uint8_t)c;
-
-    uint8_t newr, newg, newb;
-
-    newr = addWithoutOverflow(r, bdelta);
-    newg = addWithoutOverflow(g, bdelta);
-    newb = addWithoutOverflow(b, bdelta);
-
-    strip.setPixelColor(i, newr, newg, newb);
-    strip.show();
-}
-
-void decreasePixelBrightness(uint8_t i, uint8_t bdelta) {
-    uint32_t c = strip.getPixelColor(i);
-    uint8_t r = (uint8_t)(c >> 16);
-    uint8_t g = (uint8_t)(c >> 8);
-    uint8_t b = (uint8_t)c;
-
-    uint8_t newr, newg, newb;
-
-    newr = subWithoutUnderflow(r, bdelta);
-    newg = subWithoutUnderflow(g, bdelta);
-    newb = subWithoutUnderflow(b, bdelta);
-
-    strip.setPixelColor(i, newr, newg, newb);
-    strip.show();
-}
-
-uint8_t addWithoutOverflow(int a, int b) {
-    if ((255 - a) < b) {
-        return 255;
-    }
-    else {
-        return a + b;
-    }
-}
-
-uint8_t subWithoutUnderflow(int a, int b) {
-    if ((255 - a) < b || a < b) {
-        return 0;
-    }
-    else {
-        return a - b;
-    }
-}
-
-// Fill the dots one after the other with a color
-void colorWipe(uint32_t c, uint8_t wait) {
-    for (uint16_t i = 0; i < strip.numPixels(); i++) {
-        strip.setPixelColor(cs(i), c);
-        strip.show();
-        delay(wait);
-    }
-}
-
 void rainbowShape(uint8_t shape[], uint8_t shape_len, uint8_t wait) {
     uint16_t i, j;
 
-    for (j = 0; j < 256 * 5; j++) { // 5 cycles of all colors on wheel
+    for (j = 0; j < 256 * 3; j++) { // 3 cycles of all colors on wheel
         for (i = 0; i < shape_len; i++) {
             strip.setPixelColor(cs(shape[i]), Wheel(((i * 256 / shape_len) + j) & 255));
         }
@@ -372,6 +340,67 @@ void rainbowShape(uint8_t shape[], uint8_t shape_len, uint8_t wait) {
     clearPixels();
 }
 
+// Rows & Columns
+void demoColumns(uint32_t c, uint16_t wait) {
+    clearPixels();
+    // todo: shorthand this like rows?
+    uint8_t i,x;
+    for(i = 0; i < 2; i++){
+      for(x = 0; x < COLS; x++){
+        paintShape(c, cols[x], colLengths[x]);
+        delay(wait);
+      }
+      for(x = 0; x < COLS; x++){
+        clearShape(cols[x], colLengths[x]);
+        delay(wait);
+      }
+    }
+    for(i = 0; i < 2; i++){
+      for(x = 0; x < COLS; x++){
+        paintShape(c, cols[x], colLengths[x]);
+        delay(wait);
+      }
+      for(x = 0; x < COLS; x++){
+        clearShape(cols[COLS - x], colLengths[COLS - x]);
+        delay(wait);
+      }
+    }
+    for(uint8_t i = 0; i < 3; i++){
+      for(x = 0; x < COLS; x++){
+        paintShape(c, cols[x], colLengths[x]);
+        delay(wait);
+        clearShape(cols[x], colLengths[x]);
+      }
+    }
+  
+    clearPixels();
+}
+
+void demoFallingRows(uint32_t c) {
+    clearPixels();
+    for (uint8_t rowsDropped = 0; rowsDropped < 7; rowsDropped++) {
+        for (uint8_t rowsBlinked = 0; rowsBlinked < 7; rowsBlinked++) {
+            paintShape(c, rows[rowsBlinked], rowLengths[rowsBlinked]);
+            delay(100);
+            if (rowsDropped >= 6 - rowsBlinked) {
+                break;
+            }
+            clearShape(rows[rowsBlinked], rowLengths[rowsBlinked]);
+        }
+    }
+    delay(300);
+    clearPixels();
+}
+
+// Letters...
+
+void demoAlphabet(uint32_t c, uint16_t wait){
+   for(uint8_t i = 0; i < ALPHABET; i++){
+      demoShapeWipe(letters[i], letter_len[i], c, wait);
+   }
+}
+
+// Rotation! Uses current pendant lit pixels
 // one 'tick' of the pendant, aka 1/6 rotation
 void rotatePendant() {
     uint32_t prev1, prev2, temp;
@@ -399,11 +428,13 @@ void rotatePendant() {
 // take current design and spin one full time
 void spinOneCircle(int timeDelay) {
     for (int a = 0; a < 6; a++) {
-        rotatePendant();
         delay(timeDelay);
+        rotatePendant();
+
     }
 }
 
+// Rainbow Math
 // Input a value 0 to 255 to get a color value.
 // The colours are a transition r - g - b - back to r.
 uint32_t Wheel(byte WheelPos) {
@@ -437,8 +468,9 @@ void rainbowLoop() {
             rgbColour[incColour] += 1;
 
             uint32_t c = strip.Color(rgbColour[0], rgbColour[1], rgbColour[2]);
-            drawShape(c, peaceSign, PEACE_LEN);
-            delay(50);
+            // TODO: modular-ize this
+            paintShape(c, peaceSign, PEACE_LEN);
+            delay(10);
         }
     }
 }
