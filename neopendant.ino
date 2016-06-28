@@ -3,9 +3,6 @@
 
 #define PIN 0
 
-// ideas: Raining! Matrix! with trail!
-// write a demo for brightness testing?
-
 #define STRIP_LEN 19
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_LEN, PIN, NEO_GRB);
 
@@ -67,8 +64,8 @@ uint32_t rainbow[RAINBOW_LEN] = {RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLE
         0                      1
     11     1                0    2
   10    12     2         11    13     3
-    17    13               18    14
-  9      18      3       10     12      4
+     17     13              18    14
+  9      18      3       10    12      4
     16    14               17    15
   8     15     4         9     16     5
      7     5                8     6
@@ -113,22 +110,25 @@ void loop() {
   delay(100);
   clearPixels();
 
-  demoRaining(200);
+  demoRaining(50);
+  
+  demoMatrix(50);
 
   rainbowBubblePop(100);
   demoRainbowRadiate(100);
 
-  demoShape(strip.Color(0, 200, 100), spokes, SPOKES_LEN, 1000);
 
-  paintShape(strip.Color(0, 200, 100), peaceSign, PEACE_LEN);
-  spinOneCircle(500);
-  clearPixels();
+ // paintShape(strip.Color(0, 200, 100), smileyFace, SMILE_LEN);
+  //spinOneCircle(500);
+  //clearPixels();
 
   paintShape(strip.Color(0, 200, 100), line, LINE_LEN);
   spinOneCircle(500);
   clearPixels();
 
-  demoColumns(strip.Color(255, 0, 255), 150);
+  demoColumns(strip.Color(255, 0, 255), 100);
+  demoColumns(strip.Color(0, 0, 255), 100);
+  
   demoFallingRows(strip.Color(0, 255, 0));
 
   rainbowLoop();
@@ -142,14 +142,17 @@ void loop() {
   rainbowShape(letterL, L_LEN, 5);
   rainbowShape(letterY, Y_LEN, 5);
 
+  demoColorWipe(200);
 
-  demoColorWipe(50);
+  demoDiagonalColorWipe(200);
 
-  demoDiagonalColorWipe(50);
+  rainbowShape(diagonalWipe, STRIP_LEN, 100);
 
-  rainbowShape(diagonalWipe, STRIP_LEN, 10);
-
-  //demoAlphabet(strip.Color(0, 200, 100), 50);
+  demoShapeWipe(letterE, E_LEN, RED, 100);
+  demoShapeWipe(letterK, K_LEN, BLUE, 100);
+  demoShapeWipe(letterA, A_LEN, YELLOW, 100);
+  demoShapeWipe(letterV, V_LEN, GREEN, 100);
+  demoShapeWipe(letterQ, Q_LEN, VIOLET, 100);
 }
 
 // UTIL-----------------------------------------
@@ -399,6 +402,30 @@ void demoRaining(uint16_t wait) {
       strip.show();
       delay(wait);
       clearShape(cols[order[colsRained]], colLengths[order[colsRained]]);
+    }
+  }
+}
+
+
+void demoMatrix(uint16_t wait) {
+  clearPixels();
+  uint8_t order[COLS] = {3, 2, 0, 4, 1};
+  paintAll(strip.Color(0,20,0));
+  for (uint8_t colsRained = 0; colsRained < COLS; colsRained++) {
+    uint8_t numFrames = colLengths[order[colsRained]] + 2; // for trail
+    for (uint8_t frame = 0; frame < numFrames; frame++) {
+      if (frame < (numFrames - 2)) {
+        setPixel(cs(cols[order[colsRained]][frame]), strip.Color(0, 255,0));
+      }
+      if (frame > 0 && frame < (numFrames - 1)) {
+        setPixel(cs(cols[order[colsRained]][frame - 1]), strip.Color(0, 128,0));
+      }
+      if (frame > 1) {
+        setPixel(cs(cols[order[colsRained]][frame - 2]), strip.Color(0, 40,0));
+      }
+      strip.show();
+      delay(wait);
+      paintShape(strip.Color(0,20,0), cols[order[colsRained]], colLengths[order[colsRained]]);
     }
   }
 }
