@@ -1,5 +1,5 @@
 #include <Adafruit_NeoPixel.h>
-#include "letters.h"
+//#include "letters.h"
 
 #define PIN 0
 
@@ -57,6 +57,7 @@ uint32_t INDIGO = strip.Color(75, 0, 130);
 uint32_t VIOLET = strip.Color(139, 0, 255);
 
 #define RAINBOW_LEN 7
+// ADD MORE
 uint32_t rainbow[RAINBOW_LEN] = {RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET};
 
 /*
@@ -110,37 +111,37 @@ void loop() {
   delay(100);
   clearPixels();
 
-  demoRaining(50);
-  
+  //demoRaining(50);
+
   demoMatrix(50);
 
-  rainbowBubblePop(100);
-  demoRainbowRadiate(100);
+  rainbowBubblePop(300);
+  demoRainbowRadiate(300);
 
 
- // paintShape(strip.Color(0, 200, 100), smileyFace, SMILE_LEN);
+  // paintShape(strip.Color(0, 200, 100), smileyFace, SMILE_LEN);
   //spinOneCircle(500);
   //clearPixels();
 
   paintShape(strip.Color(0, 200, 100), line, LINE_LEN);
-  spinOneCircle(500);
+  //  spinOneCircle(500);
   clearPixels();
 
   demoColumns(strip.Color(255, 0, 255), 100);
   demoColumns(strip.Color(0, 0, 255), 100);
-  
-  demoFallingRows(strip.Color(0, 255, 0));
 
-  rainbowLoop();
+  //  demoFallingRows(strip.Color(0, 255, 0));
+
+  //rainbowLoop();
   clearPixels();
 
-  rainbowShape(letterF, F_LEN, 5);
-  rainbowShape(letterI, I_LEN, 5);
-  rainbowShape(letterR, R_LEN, 5);
-  rainbowShape(letterE, E_LEN, 5);
-  rainbowShape(letterF, F_LEN, 5);
-  rainbowShape(letterL, L_LEN, 5);
-  rainbowShape(letterY, Y_LEN, 5);
+  /*rainbowShape(letterF, F_LEN, 5);
+    rainbowShape(letterI, I_LEN, 5);
+    rainbowShape(letterR, R_LEN, 5);
+    rainbowShape(letterE, E_LEN, 5);
+    rainbowShape(letterF, F_LEN, 5);
+    rainbowShape(letterL, L_LEN, 5);
+    rainbowShape(letterY, Y_LEN, 5);*/
 
   demoColorWipe(200);
 
@@ -148,11 +149,14 @@ void loop() {
 
   rainbowShape(diagonalWipe, STRIP_LEN, 100);
 
-  demoShapeWipe(letterE, E_LEN, RED, 100);
-  demoShapeWipe(letterK, K_LEN, BLUE, 100);
-  demoShapeWipe(letterA, A_LEN, YELLOW, 100);
-  demoShapeWipe(letterV, V_LEN, GREEN, 100);
-  demoShapeWipe(letterQ, Q_LEN, VIOLET, 100);
+  //demoColumns(strip.Color(0,128,255), 200);
+//  lToRFill(strip.Color(255, 10,10), 4, 200);
+
+  /*demoShapeWipe(letterE, E_LEN, RED, 100);
+    demoShapeWipe(letterK, K_LEN, BLUE, 100);
+    demoShapeWipe(letterA, A_LEN, YELLOW, 100);
+    demoShapeWipe(letterV, V_LEN, GREEN, 100);
+    demoShapeWipe(letterQ, Q_LEN, VIOLET, 100);*/
 }
 
 // UTIL-----------------------------------------
@@ -318,7 +322,7 @@ void demoShape(uint32_t c, uint8_t shape[], uint8_t shape_len, int waitTime) {
   clearPixels();
 }
 
-void demoBlinkInOrder(int timedelay) {
+/*void demoBlinkInOrder(int timedelay) {
   clearPixels();
   for (uint8_t i = 0; i < strip.numPixels(); i++) {
     strip.setPixelColor(cs(i), 255, 255, 255);
@@ -326,7 +330,7 @@ void demoBlinkInOrder(int timedelay) {
     delay(timedelay);
     clearPixel(cs(i));
   }
-}
+}*/
 
 // Rows & Columns
 void demoColumns(uint32_t c, uint16_t wait) {
@@ -343,32 +347,38 @@ void demoColumns(uint32_t c, uint16_t wait) {
       delay(wait);
     }
   }
-  for (i = 0; i < 2; i++) {
-    for (x = 0; x < COLS; x++) {
-      paintShape(c, cols[x], colLengths[x]);
-      delay(wait);
-    }
-    for (x = 0; x <= COLS; x++) {
-      clearShape(cols[COLS - x], colLengths[COLS - x]);
-      delay(wait);
-    }
-  }
-  for (uint8_t i = 0; i < RAINBOW_LEN; i++) {
-    columnStripe(rainbow[i], wait);
-  }
 
   clearPixels();
 }
 
-void columnStripe(uint32_t c, uint16_t wait) {
+/*void tronSwipe(uint16_t wait) {
+  for (uint8_t i = 0; i < RAINBOW_LEN; i++) {
+    columnStripe(rainbow[i], wait);
+  }
+}*/
+
+/*void lToRFill(uint8_t times, uint32_t c, uint16_t wait) {
+  for (uint8_t i = 0; i < times; i++) {
+    for (uint8_t x = 0; x < COLS; x++) {
+      paintShape(c, cols[x], colLengths[x]);
+      delay(wait);
+    }
+    for (uint8_t x = 0; x <= COLS; x++) {
+      clearShape(cols[COLS - x], colLengths[COLS - x]);
+      delay(wait);
+    }
+  }
+}*/
+
+/*void columnStripe(uint32_t c, uint16_t wait) {
   for (uint8_t x = 0; x < COLS; x++) {
     paintShape(c, cols[x], colLengths[x]);
     delay(wait);
     clearShape(cols[x], colLengths[x]);
   }
-}
+}*/
 
-void demoFallingRows(uint32_t c) {
+/*void demoFallingRows(uint32_t c) {
   clearPixels();
   for (uint8_t rowsDropped = 0; rowsDropped < 7; rowsDropped++) {
     for (uint8_t rowsBlinked = 0; rowsBlinked < 7; rowsBlinked++) {
@@ -382,7 +392,7 @@ void demoFallingRows(uint32_t c) {
   }
   delay(300);
   clearPixels();
-}
+  }*/
 
 void demoRaining(uint16_t wait) {
   clearPixels();
@@ -404,45 +414,45 @@ void demoRaining(uint16_t wait) {
       clearShape(cols[order[colsRained]], colLengths[order[colsRained]]);
     }
   }
-}
+  }
 
 
 void demoMatrix(uint16_t wait) {
   clearPixels();
   uint8_t order[COLS] = {3, 2, 0, 4, 1};
-  paintAll(strip.Color(0,20,0));
+  paintAll(strip.Color(0, 20, 0));
   for (uint8_t colsRained = 0; colsRained < COLS; colsRained++) {
     uint8_t numFrames = colLengths[order[colsRained]] + 2; // for trail
     for (uint8_t frame = 0; frame < numFrames; frame++) {
       if (frame < (numFrames - 2)) {
-        setPixel(cs(cols[order[colsRained]][frame]), strip.Color(0, 255,0));
+        setPixel(cs(cols[order[colsRained]][frame]), strip.Color(0, 255, 0));
       }
       if (frame > 0 && frame < (numFrames - 1)) {
-        setPixel(cs(cols[order[colsRained]][frame - 1]), strip.Color(0, 128,0));
+        setPixel(cs(cols[order[colsRained]][frame - 1]), strip.Color(0, 128, 0));
       }
       if (frame > 1) {
-        setPixel(cs(cols[order[colsRained]][frame - 2]), strip.Color(0, 40,0));
+        setPixel(cs(cols[order[colsRained]][frame - 2]), strip.Color(0, 40, 0));
       }
       strip.show();
       delay(wait);
-      paintShape(strip.Color(0,20,0), cols[order[colsRained]], colLengths[order[colsRained]]);
+      paintShape(strip.Color(0, 20, 0), cols[order[colsRained]], colLengths[order[colsRained]]);
     }
   }
 }
 
 // Letters...
 
-void demoAlphabet(uint32_t c, uint16_t wait) {
+/*void demoAlphabet(uint32_t c, uint16_t wait) {
   for (uint8_t i = 0; i < ALPHABET; i++) {
     demoShapeWipe(letters[i], letter_len[i], c, wait);
   }
-}
+  }*/
 
 
 
-// Rotation! Uses current pendant lit pixels
-// one 'tick' of the pendant, aka 1/6 rotation
-void rotatePendant() {
+/*// Rotation! Uses current pendant lit pixels
+  // one 'tick' of the pendant, aka 1/6 rotation
+  void rotatePendant() {
   uint32_t prev1, prev2, temp;
   for (uint8_t x = 0; x < RING2_LEN; x++) {
     if (x == 0) {
@@ -463,16 +473,16 @@ void rotatePendant() {
     prev1 = temp;
   }
   strip.show();
-}
+  }
 
-// take current design and spin one full time
-void spinOneCircle(int timeDelay) {
+  // take current design and spin one full time
+  void spinOneCircle(int timeDelay) {
   for (int a = 0; a < 7; a++) {
     delay(timeDelay);
     rotatePendant();
 
   }
-}
+  }*/
 
 // Rainbow Math
 
@@ -505,7 +515,7 @@ uint32_t Wheel(byte WheelPos) {
   }
 }
 
-void rainbowLoop() {
+/*void rainbowLoop() {
   uint8_t rgbColour[3];
 
   // Start off with red.
@@ -528,4 +538,4 @@ void rainbowLoop() {
       delay(10);
     }
   }
-}
+  }*/
